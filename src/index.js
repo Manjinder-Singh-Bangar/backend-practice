@@ -2,6 +2,7 @@ import dotenv from "dotenv"
 import mongoose, { mongo } from "mongoose";
 import express from "express";
 import dbConnect from "./db/db.js";
+import { app } from "./app.js";
 
 dotenv.config(
     {
@@ -10,12 +11,14 @@ dotenv.config(
 )
 
 dbConnect()
-// ;( async()=>{
-//     try{
-//         await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
-//     }
-//     catch(error){
-//         console.log(error)
-//         throw error
-//     }
-// })()
+.then(()=>{
+    app.on("error", (error)=>{
+        console.log(`Error while starting app err${error}`)
+        throw error
+    })
+    app.listen(process.env.PORT || 8000, ()=>{
+        console.log("server is listening at "+ process.env.PORT)
+    })
+}).catch(err =>{
+    console.log(`Error while listening to server ${err}`)
+})
