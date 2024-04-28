@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import bcrypt from "bcrypt"
 
 const registerUser = asyncHandler(async (req, res)=>{
     // get user details from frontend
@@ -35,10 +36,14 @@ const registerUser = asyncHandler(async (req, res)=>{
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path
+    let coverImageLocalPath;
+    if (req.files && Array.isArray[req.files.coverImage && req.files.coverImage.length > 0]) {
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
-    console.log(avatarLocalPath);
-    console.log(coverImageLocalPath);
+    // console.log(avatarLocalPath);
+    // console.log(coverImageLocalPath);
     
     if (!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required")
@@ -60,6 +65,7 @@ const registerUser = asyncHandler(async (req, res)=>{
         email,
         username: username.toLowerCase()
     })
+
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
