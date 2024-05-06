@@ -252,10 +252,13 @@ const getUser = asyncHandler(async (req, res)=>{
 
 const updateUserDetails = asyncHandler(async(req, res) =>{
     const {fullName, email} = req.body
+    console.log(fullName, email)
 
-    if (!fullName || email) {
+    if (!fullName || !email) {
         return new ApiError(401, "All fields are required")
     }
+
+    console.log(req.user._id)
 
     const user = await User.findByIdAndUpdate(
         req.user._id,
@@ -267,6 +270,7 @@ const updateUserDetails = asyncHandler(async(req, res) =>{
         },
         {new:true}
     ).select("-password -refreshToken")
+    
     return res
     .status(200)
     .json(
@@ -281,6 +285,7 @@ const updateUserAvatar = asyncHandler(async (req, res)=>{
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
+    
 
     if(!avatar.url){
         return new ApiError(401, "Error while uploading avatar on cloudinary")
@@ -322,6 +327,12 @@ const updateUserCoverImage = asyncHandler(async (req, res)=>{
     if(!coverImage.url){
         return new ApiError(401, "Error while uploading coverImage on cloudinary")
     }
+
+    const oldCoverImage = await User.findById(req.user._id)
+
+    if(oldCoverImage)(
+        deleteOnCloudinary(oldCoverImage.coverImage)
+    )
 
 
     const user = await User.findByIdAndUpdate(
