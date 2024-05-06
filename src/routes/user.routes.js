@@ -24,8 +24,8 @@ router.route("/login").post(loginUser)
 // secured routes
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/update-information").post(verifyJWT, updateUserDetails)
-router.route("/avatar-updating").post(verifyJWT,
+router.route("/update-information").patch(verifyJWT, updateUserDetails)
+router.route("/avatar-updating").patch(verifyJWT,
     upload.fields([
         {
             name:"avatar",
@@ -33,7 +33,7 @@ router.route("/avatar-updating").post(verifyJWT,
         }
     ]), updateUserAvatar
 )
-router.route("/coverImage-updating").post(verifyJWT,
+router.route("/coverImage-updating").patch(verifyJWT,
     upload.fields([
         {
             name: "coverImage",
